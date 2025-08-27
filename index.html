@@ -33,8 +33,9 @@
             background: linear-gradient(135deg, #ff9a9e 0%, #f093fb 100%);
         }
 
-        body.version-noiva .stats-card {
-            background: linear-gradient(135deg, #ff9a9e 0%, #f093fb 100%);
+        body.version-noiva .countdown {
+            background: rgba(255, 154, 158, 0.9);
+            border: 2px solid rgba(255, 154, 158, 0.3);
         }
 
         body.version-noiva .logo h1 {
@@ -206,9 +207,9 @@
         }
 
         .countdown {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(102, 126, 234, 0.9);
             color: white;
-            border: 2px solid rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(102, 126, 234, 0.3);
             padding: 25px;
             border-radius: 15px;
             text-align: center;
@@ -329,36 +330,6 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-        }
-
-        .admin-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 25px;
-            margin-bottom: 30px;
-        }
-
-        .stats-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px 20px;
-            border-radius: 15px;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
-        }
-
-        .stats-number {
-            font-size: 3em;
-            font-weight: bold;
-            color: white;
-            margin-bottom: 10px;
-            display: block;
-        }
-
-        .stats-label {
-            font-size: 1.1em;
-            opacity: 0.9;
-            font-weight: 500;
         }
 
         .table {
@@ -522,6 +493,20 @@
             box-shadow: 0 8px 20px rgba(0,0,0,0.15);
         }
 
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
         @media (max-width: 768px) {
             body {
                 padding: 10px;
@@ -558,10 +543,6 @@
                 left: 0;
                 margin-bottom: 20px;
             }
-            
-            .admin-grid {
-                grid-template-columns: 1fr;
-            }
 
             .user-management-item {
                 flex-direction: column;
@@ -588,7 +569,12 @@
                     <h1>🎉 InvitesAO</h1>
                 </div>
                 <div id="guestContent">
-                    <div style="text-align: center; padding: 40px;">
+                    <div id="loadingScreen" style="text-align: center; padding: 40px;">
+                        <h2>🎉 Carregando...</h2>
+                        <div class="loading-spinner" style="margin: 20px auto;"></div>
+                        <p style="margin: 20px 0; color: #666;">Aguarde um momento...</p>
+                    </div>
+                    <div id="welcomeScreen" style="text-align: center; padding: 40px;" class="hidden">
                         <h2>🎉 Bem-vindo ao InvitesAO</h2>
                         <p style="margin: 20px 0; color: #666;">Sistema de confirmação de presença para seus eventos especiais.</p>
                         <button class="btn btn-primary" onclick="showLogin()">Fazer Login</button>
@@ -760,25 +746,6 @@
                 <h1>🔧 Painel Administrativo</h1>
             </div>
             <div id="adminNotification"></div>
-            
-            <div class="admin-grid">
-                <div class="stats-card">
-                    <div class="stats-number" id="totalUsers">0</div>
-                    <div class="stats-label">👥 Usuários Totais</div>
-                </div>
-                <div class="stats-card">
-                    <div class="stats-number" id="pendingUsers">0</div>
-                    <div class="stats-label">⏳ Aguardando Aprovação</div>
-                </div>
-                <div class="stats-card">
-                    <div class="stats-number" id="totalEvents">0</div>
-                    <div class="stats-label">🎉 Eventos Criados</div>
-                </div>
-                <div class="stats-card">
-                    <div class="stats-number" id="totalResponses">0</div>
-                    <div class="stats-label">📝 Confirmações</div>
-                </div>
-            </div>
 
             <div class="admin-content">
                 <h3>⏳ Solicitações Pendentes</h3>
@@ -957,6 +924,9 @@
             if (eventId) {
                 await loadGuestEvent(eventId);
             } else {
+                // Show welcome screen if no event
+                document.getElementById('loadingScreen').classList.add('hidden');
+                document.getElementById('welcomeScreen').classList.remove('hidden');
                 updateTopNav();
             }
         }
@@ -1095,13 +1065,14 @@
 
             document.getElementById('guestContent').innerHTML = `
                 <h2 style="text-align: center; margin-bottom: 20px; color: #333;">${event.name}</h2>
-                ${event.photo ? `<img src="${event.photo}" alt="Foto dos Noivos" class="event-photo">` : ''}
                 <div style="text-align: center; margin-bottom: 20px; color: #333;">
-                    <strong>Data: ${formatDate(eventDate)}</strong>
+                    <strong style="font-size: 1.2em;">📅 ${formatDate(eventDate)}</strong>
                 </div>
-                ${event.description ? `<p style="margin-bottom: 20px; text-align: center; color: #555;">${event.description}</p>` : ''}
+                ${event.photo ? `<img src="${event.photo}" alt="Foto dos Noivos" class="event-photo">` : ''}
                 
                 <div class="countdown" id="countdown"></div>
+                
+                ${event.description ? `<p style="margin-bottom: 20px; text-align: center; color: #555;">${event.description}</p>` : ''}
                 
                 ${responseSection}
             `;
@@ -1904,11 +1875,6 @@
                 const pendingUsers = users?.filter(u => !u.approved) || [];
                 const approvedUsers = users?.filter(u => u.approved) || [];
 
-                document.getElementById('totalUsers').textContent = users?.length || 0;
-                document.getElementById('pendingUsers').textContent = pendingUsers.length;
-                document.getElementById('totalEvents').textContent = events?.length || 0;
-                document.getElementById('totalResponses').textContent = responses?.length || 0;
-
                 // Pending requests
                 const pendingHtml = pendingUsers.map(user => `
                     <div class="user-management-item">
@@ -2361,5 +2327,5 @@
             document.getElementById('previewImage').src = '';
         }
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'975d92a7005a77d7',t:'MTc1NjMxODcyMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'975dbd83a29777da',t:'MTc1NjMyMDQ3Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
