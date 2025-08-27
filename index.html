@@ -623,21 +623,21 @@
             }
             
             .countdown-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 10px;
-                max-width: 280px;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 8px;
+                max-width: 100%;
             }
             
             .countdown-item {
-                padding: 12px 8px;
+                padding: 10px 4px;
             }
             
             .countdown-number {
-                font-size: 1.5em;
+                font-size: 1.3em;
             }
             
             .countdown-label {
-                font-size: 0.6em;
+                font-size: 0.55em;
             }
             
             .modal-content {
@@ -713,17 +713,17 @@
             }
             
             .countdown-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 8px;
-                max-width: 240px;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 6px;
+                max-width: 100%;
             }
             
             .countdown-item {
-                padding: 10px 6px;
+                padding: 8px 3px;
             }
             
             .countdown-number {
-                font-size: 1.3em;
+                font-size: 1.1em;
             }
             
             .modal-content {
@@ -820,9 +820,6 @@
                 <button class="btn btn-secondary btn-small hidden" onclick="logout()" id="logoutBtn">Sair</button>
             </div>
             <div class="content-wrapper">
-                <div class="logo">
-                    <h1>🎉 InvitesAO</h1>
-                </div>
                 <div id="guestContent">
                     <div id="loadingScreen" style="text-align: center; padding: 40px;">
                         <h2>🎉 Carregando...</h2>
@@ -1369,7 +1366,7 @@
             document.getElementById('guestContent').innerHTML = `
                 <h2 style="text-align: center; margin-bottom: 20px; color: #333;">${event.name}</h2>
                 <div style="text-align: center; margin-bottom: 20px; color: #333;">
-                    <strong style="font-size: 1.2em;">📅 ${formatDate(eventDate)}</strong>
+                    <strong style="font-size: 1.2em;">${formatDate(eventDate)}</strong>
                 </div>
                 ${event.photo ? `<img src="${event.photo}" alt="Foto dos Noivos" class="event-photo">` : ''}
                 
@@ -2700,5 +2697,5 @@
             document.getElementById('previewImage').src = '';
         }
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'975dcc6f566277da',t:'MTc1NjMyMTA4OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'975dd9df74f277d7',t:'MTc1NjMyMTYzOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
