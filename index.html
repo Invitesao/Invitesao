@@ -2080,108 +2080,211 @@
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF();
 
-                // Header
-                doc.setFontSize(18);
-                doc.setFont('helvetica', 'bold');
-                doc.text('RELATORIO DO EVENTO', 105, 25, { align: 'center' });
+                // Função para limpar caracteres especiais
+                const cleanText = (text) => {
+                    if (!text) return '';
+                    return text
+                        .normalize('NFD')
+                        .replace(/[\u0300-\u036f]/g, '') // Remove acentos
+                        .replace(/[^\w\s\-\.\,\(\)\+]/g, '') // Remove caracteres especiais
+                        .trim();
+                };
 
-                // Event details
+                // Cores do tema
+                const primaryColor = [102, 126, 234]; // Azul principal
+                const secondaryColor = [118, 75, 162]; // Roxo
+                const accentColor = [255, 154, 158]; // Rosa
+                const darkGray = [51, 51, 51];
+                const lightGray = [128, 128, 128];
+                const bgGray = [248, 249, 250];
+
+                let yPos = 30;
+
+                // HEADER ELEGANTE
+                doc.setFillColor(...primaryColor);
+                doc.rect(0, 0, 210, 50, 'F');
+                
+                // Título principal
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(24);
+                doc.setFont('helvetica', 'bold');
+                doc.text('RELATORIO DE CONVIDADOS', 105, 25, { align: 'center' });
+                
+                // Nome do evento
+                doc.setFontSize(16);
+                doc.setFont('helvetica', 'normal');
+                doc.text(cleanText(event.name), 105, 40, { align: 'center' });
+
+                yPos = 70;
+
+                // INFORMAÇÕES DO EVENTO
+                doc.setFillColor(...bgGray);
+                doc.rect(15, yPos - 5, 180, 25, 'F');
+                doc.setDrawColor(200, 200, 200);
+                doc.rect(15, yPos - 5, 180, 25, 'S');
+
+                doc.setTextColor(...darkGray);
+                doc.setFontSize(12);
+                doc.setFont('helvetica', 'bold');
+                doc.text('INFORMACOES DO EVENTO', 20, yPos + 5);
+
+                doc.setFontSize(10);
+                doc.setFont('helvetica', 'normal');
+                doc.text(`Data do Evento: ${formatDate(new Date(event.event_date))}`, 20, yPos + 12);
+                doc.text(`Gerado em: ${new Date().toLocaleDateString('pt-BR')} as ${new Date().toLocaleTimeString('pt-BR')}`, 20, yPos + 18);
+
+                yPos += 40;
+
+                // RESUMO ESTATÍSTICO
+                doc.setFillColor(...primaryColor);
+                doc.rect(15, yPos - 5, 180, 35, 'F');
+
+                doc.setTextColor(255, 255, 255);
                 doc.setFontSize(14);
-                doc.text(event.name, 105, 40, { align: 'center' });
+                doc.setFont('helvetica', 'bold');
+                doc.text('RESUMO GERAL', 105, yPos + 5, { align: 'center' });
 
                 doc.setFontSize(11);
                 doc.setFont('helvetica', 'normal');
-                doc.text(`Data do Evento: ${formatDate(new Date(event.event_date))}`, 105, 55, { align: 'center' });
+                doc.text(`Total Confirmados: ${attending.length} pessoas + ${totalCompanions} acompanhantes = ${attending.length + totalCompanions} total`, 105, yPos + 15, { align: 'center' });
+                doc.text(`Nao comparecerao: ${notAttending.length} pessoas`, 105, yPos + 22, { align: 'center' });
 
-                // Summary
-                doc.setFontSize(10);
-                doc.text(`Total Confirmados: ${attending.length} pessoas + ${totalCompanions} acompanhantes = ${attending.length + totalCompanions} total`, 20, 70);
-                doc.text(`Total que nao comparecerao: ${notAttending.length} pessoas`, 20, 80);
+                yPos += 50;
 
-                let yPos = 100;
-
-                // Function to add guest list
-                const addGuestList = (guests, title, isNoivo = true) => {
+                // Função para adicionar seção de convidados
+                const addGuestSection = (guests, title, color, icon) => {
                     if (guests.length === 0) return yPos;
                     
-                    // Check if we need a new page
-                    if (yPos > 250) {
+                    // Verificar se precisa de nova página
+                    if (yPos > 240) {
                         doc.addPage();
                         yPos = 30;
                     }
 
+                    // Header da seção
+                    doc.setFillColor(...color);
+                    doc.rect(15, yPos - 5, 180, 15, 'F');
+                    
+                    doc.setTextColor(255, 255, 255);
                     doc.setFontSize(12);
                     doc.setFont('helvetica', 'bold');
-                    doc.text(title, 20, yPos);
-                    yPos += 10;
+                    doc.text(`${icon} ${title} (${guests.length})`, 20, yPos + 5);
 
-                    doc.setFontSize(9);
-                    doc.setFont('helvetica', 'normal');
+                    yPos += 20;
 
+                    // Lista de convidados
                     guests.forEach((response, index) => {
-                        // Check if we need a new page (leaving space for companion names)
-                        const spaceNeeded = response.companion_names && response.companion_names.length > 0 ? 15 : 10;
+                        // Verificar espaço na página
+                        const spaceNeeded = response.companion_names && response.companion_names.length > 0 ? 20 : 12;
                         if (yPos + spaceNeeded > 280) {
                             doc.addPage();
                             yPos = 30;
                         }
 
-                        const guestLine = `${index + 1}. ${response.guest_name}`;
-                        doc.text(guestLine, 25, yPos);
+                        // Background alternado para melhor leitura
+                        if (index % 2 === 0) {
+                            doc.setFillColor(...bgGray);
+                            doc.rect(15, yPos - 3, 180, spaceNeeded - 2, 'F');
+                        }
+
+                        // Nome do convidado
+                        doc.setTextColor(...darkGray);
+                        doc.setFontSize(10);
+                        doc.setFont('helvetica', 'bold');
+                        doc.text(`${index + 1}. ${cleanText(response.guest_name)}`, 20, yPos + 3);
                         
+                        // Acompanhantes
                         if (response.companions > 0) {
-                            doc.text(`+ ${response.companions} acompanhante(s)`, 130, yPos);
+                            doc.setTextColor(...lightGray);
+                            doc.setFont('helvetica', 'normal');
+                            doc.text(`+ ${response.companions} acompanhante(s)`, 150, yPos + 3);
                             
+                            // Nomes dos acompanhantes
                             if (response.companion_names && response.companion_names.length > 0) {
                                 yPos += 8;
-                                const companionText = `Nomes: ${response.companion_names.join(', ')}`;
-                                // Split long companion names if needed
-                                const maxWidth = 160;
+                                const companionText = `Acompanhantes: ${response.companion_names.map(name => cleanText(name)).join(', ')}`;
+                                const maxWidth = 170;
                                 const lines = doc.splitTextToSize(companionText, maxWidth);
+                                
+                                doc.setFontSize(9);
+                                doc.setTextColor(...lightGray);
                                 lines.forEach((line, lineIndex) => {
-                                    doc.text(line, 30, yPos + (lineIndex * 6));
+                                    doc.text(line, 25, yPos + (lineIndex * 5));
                                 });
-                                yPos += (lines.length - 1) * 6;
+                                yPos += (lines.length - 1) * 5;
                             }
                         }
-                        yPos += 10;
+                        
+                        yPos += 12;
                     });
 
                     return yPos + 10;
                 };
 
-                // Confirmed attendees - Noivo
+                // CONVIDADOS CONFIRMADOS
                 if (attendingNoivo.length > 0) {
-                    yPos = addGuestList(attendingNoivo, `🤵 CONVIDADOS DO NOIVO CONFIRMADOS (${attendingNoivo.length} + ${totalCompanionsNoivo} acompanhantes):`);
+                    yPos = addGuestSection(
+                        attendingNoivo, 
+                        `CONVIDADOS DO NOIVO CONFIRMADOS (+${totalCompanionsNoivo} acompanhantes)`, 
+                        primaryColor, 
+                        'NOIVO'
+                    );
                 }
 
-                // Confirmed attendees - Noiva
                 if (attendingNoiva.length > 0) {
-                    yPos = addGuestList(attendingNoiva, `👰 CONVIDADOS DA NOIVA CONFIRMADOS (${attendingNoiva.length} + ${totalCompanionsNoiva} acompanhantes):`);
+                    yPos = addGuestSection(
+                        attendingNoiva, 
+                        `CONVIDADOS DA NOIVA CONFIRMADOS (+${totalCompanionsNoiva} acompanhantes)`, 
+                        accentColor, 
+                        'NOIVA'
+                    );
                 }
 
-                // Not attending - Noivo
+                // CONVIDADOS QUE NÃO COMPARECERÃO
                 if (notAttendingNoivo.length > 0) {
-                    yPos = addGuestList(notAttendingNoivo, `🤵 CONVIDADOS DO NOIVO QUE NAO COMPARECERAO (${notAttendingNoivo.length}):`);
+                    yPos = addGuestSection(
+                        notAttendingNoivo, 
+                        'CONVIDADOS DO NOIVO QUE NAO COMPARECERAO', 
+                        lightGray, 
+                        'NOIVO'
+                    );
                 }
 
-                // Not attending - Noiva
                 if (notAttendingNoiva.length > 0) {
-                    yPos = addGuestList(notAttendingNoiva, `👰 CONVIDADOS DA NOIVA QUE NAO COMPARECERAO (${notAttendingNoiva.length}):`);
+                    yPos = addGuestSection(
+                        notAttendingNoiva, 
+                        'CONVIDADOS DA NOIVA QUE NAO COMPARECERAO', 
+                        lightGray, 
+                        'NOIVA'
+                    );
                 }
 
-                // Footer
+                // FOOTER PROFISSIONAL
                 const pageCount = doc.internal.getNumberOfPages();
                 for (let i = 1; i <= pageCount; i++) {
                     doc.setPage(i);
+                    
+                    // Linha decorativa no rodapé
+                    doc.setDrawColor(...primaryColor);
+                    doc.setLineWidth(0.5);
+                    doc.line(15, 285, 195, 285);
+                    
+                    // Informações do rodapé
+                    doc.setTextColor(...lightGray);
                     doc.setFontSize(8);
                     doc.setFont('helvetica', 'normal');
                     doc.text(`Pagina ${i} de ${pageCount}`, 105, 290, { align: 'center' });
-                    doc.text(`Gerado em ${new Date().toLocaleDateString('pt-BR')} as ${new Date().toLocaleTimeString('pt-BR')}`, 105, 295, { align: 'center' });
+                    doc.text('Gerado por InvitesAO - Sistema de Confirmacao de Presenca', 105, 294, { align: 'center' });
                 }
 
-                doc.save(`${event.name}_relatorio.pdf`);
+                // Salvar com nome limpo
+                const fileName = `${cleanText(event.name)}_relatorio_convidados.pdf`;
+                doc.save(fileName);
+                
+                showNotification('PDF gerado com sucesso!', 'success', 'userNotification');
+                
             } catch (error) {
+                console.error('Erro detalhado:', error);
                 showNotification('Erro ao gerar PDF: ' + error.message, 'error', 'userNotification');
             }
         }
@@ -2697,5 +2800,5 @@
             document.getElementById('previewImage').src = '';
         }
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'975dd9df74f277d7',t:'MTc1NjMyMTYzOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'975e0b01857a77d7',t:'MTc1NjMyMzY1MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
