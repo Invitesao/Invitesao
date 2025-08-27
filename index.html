@@ -34,8 +34,8 @@
         }
 
         body.version-noiva .countdown {
-            background: rgba(255, 154, 158, 0.9);
-            border: 2px solid rgba(255, 154, 158, 0.3);
+            background: rgba(248, 249, 250, 0.95);
+            border: 2px solid rgba(255, 182, 193, 0.4);
         }
 
         body.version-noiva .logo h1 {
@@ -207,13 +207,14 @@
         }
 
         .countdown {
-            background: rgba(102, 126, 234, 0.9);
-            color: white;
-            border: 2px solid rgba(102, 126, 234, 0.3);
+            background: rgba(248, 249, 250, 0.95);
+            color: #495057;
+            border: 2px solid rgba(206, 212, 218, 0.5);
             padding: 25px;
             border-radius: 15px;
             text-align: center;
             margin: 20px 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
         }
 
         .countdown-grid {
@@ -225,11 +226,12 @@
         }
 
         .countdown-item {
-            background: rgba(255, 255, 255, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(206, 212, 218, 0.4);
             padding: 15px 10px;
             border-radius: 10px;
             text-align: center;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
         }
 
         .countdown-number {
@@ -507,50 +509,303 @@
             to { transform: rotate(360deg); }
         }
 
+        /* Responsividade para tablets */
+        @media (max-width: 1024px) and (min-width: 769px) {
+            .admin-container {
+                max-width: 95%;
+                padding: 0 20px;
+            }
+            
+            .user-management-item {
+                flex-wrap: wrap;
+                gap: 15px;
+            }
+            
+            .user-actions {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+            
+            .countdown-grid {
+                max-width: 350px;
+            }
+            
+            .countdown-item {
+                padding: 18px 12px;
+            }
+            
+            .countdown-number {
+                font-size: 2em;
+            }
+        }
+
+        /* Responsividade para smartphones */
         @media (max-width: 768px) {
             body {
-                padding: 10px;
+                padding: 8px;
+                font-size: 14px;
             }
             
             .container {
-                min-height: calc(100vh - 20px);
+                min-height: calc(100vh - 16px);
+            }
+            
+            .admin-container {
+                max-width: 100%;
+                padding: 0 8px;
             }
             
             .content-wrapper, .admin-content {
-                padding: 20px;
+                padding: 20px 16px;
+                margin-bottom: 15px;
+            }
+            
+            .logo h1 {
+                font-size: 1.4em;
+            }
+            
+            input, textarea, select {
+                padding: 12px;
+                font-size: 16px; /* Evita zoom no iOS */
+            }
+            
+            .btn {
+                padding: 14px;
+                font-size: 15px;
+                min-height: 48px; /* Melhor para touch */
+            }
+            
+            .btn-small {
+                padding: 10px 14px;
+                font-size: 13px;
+                min-height: 40px;
             }
             
             .response-buttons {
                 flex-direction: column;
-                gap: 10px;
+                gap: 12px;
             }
             
             .response-btn {
-                padding: 12px 20px;
+                padding: 16px 20px;
+                font-size: 16px;
+                min-height: 50px;
             }
             
             .top-nav {
                 position: relative;
                 top: 0;
                 right: 0;
-                margin-bottom: 20px;
+                margin-bottom: 15px;
                 justify-content: center;
+                flex-wrap: wrap;
+                gap: 8px;
             }
             
             .back-nav {
                 position: relative;
                 top: 0;
                 left: 0;
-                margin-bottom: 20px;
+                margin-bottom: 15px;
             }
 
             .user-management-item {
                 flex-direction: column;
                 align-items: stretch;
+                padding: 12px;
             }
 
             .user-actions {
                 justify-content: center;
+                flex-wrap: wrap;
+                gap: 8px;
+                margin-top: 10px;
+            }
+            
+            .countdown-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+                max-width: 280px;
+            }
+            
+            .countdown-item {
+                padding: 12px 8px;
+            }
+            
+            .countdown-number {
+                font-size: 1.5em;
+            }
+            
+            .countdown-label {
+                font-size: 0.6em;
+            }
+            
+            .modal-content {
+                padding: 20px 16px;
+                margin: 20px 8px;
+                max-height: 90vh;
+                overflow-y: auto;
+            }
+            
+            .table {
+                font-size: 13px;
+            }
+            
+            .table th, .table td {
+                padding: 8px 6px;
+            }
+            
+            .event-card {
+                padding: 16px;
+                margin-bottom: 12px;
+            }
+            
+            .admin-header {
+                padding: 16px;
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+            
+            .admin-header h1 {
+                font-size: 1.3em;
+            }
+            
+            .companion-item {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .radio-group {
+                flex-direction: column;
+                gap: 12px;
+                align-items: flex-start;
+            }
+            
+            .event-photo {
+                max-height: 250px;
+                margin: 15px 0;
+            }
+        }
+
+        /* Responsividade para smartphones pequenos */
+        @media (max-width: 480px) {
+            body {
+                padding: 5px;
+                font-size: 13px;
+            }
+            
+            .content-wrapper, .admin-content {
+                padding: 16px 12px;
+            }
+            
+            .logo h1 {
+                font-size: 1.2em;
+            }
+            
+            input, textarea, select {
+                padding: 10px;
+            }
+            
+            .btn {
+                padding: 12px;
+                font-size: 14px;
+            }
+            
+            .countdown-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+                max-width: 240px;
+            }
+            
+            .countdown-item {
+                padding: 10px 6px;
+            }
+            
+            .countdown-number {
+                font-size: 1.3em;
+            }
+            
+            .modal-content {
+                padding: 16px 12px;
+                margin: 10px 5px;
+            }
+            
+            .user-actions {
+                gap: 6px;
+            }
+            
+            .btn-small {
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+        }
+
+        /* Responsividade para telas grandes */
+        @media (min-width: 1200px) {
+            .admin-container {
+                max-width: 1400px;
+            }
+            
+            .countdown-grid {
+                max-width: 400px;
+                gap: 20px;
+            }
+            
+            .countdown-item {
+                padding: 20px 15px;
+            }
+            
+            .countdown-number {
+                font-size: 2.2em;
+            }
+        }
+
+        /* Ajustes específicos para iOS */
+        @supports (-webkit-touch-callout: none) {
+            input, textarea, select {
+                -webkit-appearance: none;
+                border-radius: 12px;
+            }
+            
+            .btn {
+                -webkit-appearance: none;
+                border-radius: 12px;
+            }
+        }
+
+        /* Ajustes para modo paisagem em smartphones */
+        @media (max-width: 768px) and (orientation: landscape) {
+            .countdown-grid {
+                grid-template-columns: repeat(4, 1fr);
+                max-width: 400px;
+            }
+            
+            .modal-content {
+                max-height: 80vh;
+                overflow-y: auto;
+            }
+        }
+
+        /* Ajustes para tablets em modo retrato */
+        @media (min-width: 769px) and (max-width: 1024px) and (orientation: portrait) {
+            .container {
+                max-width: 600px;
+            }
+            
+            .admin-container {
+                max-width: 90%;
+            }
+        }
+
+        /* Ajustes para evitar zoom no iOS */
+        @media screen and (-webkit-min-device-pixel-ratio: 0) {
+            select, textarea, input[type="text"], input[type="password"], 
+            input[type="datetime"], input[type="datetime-local"], 
+            input[type="date"], input[type="month"], input[type="time"], 
+            input[type="week"], input[type="number"], input[type="email"], 
+            input[type="url"], input[type="search"], input[type="tel"] {
+                font-size: 16px !important;
             }
         }
     </style>
@@ -831,11 +1086,39 @@
         let eventPhotoBase64 = null;
 
         // Initialize App
-        document.addEventListener('DOMContentLoaded', async () => {
-            await checkSavedLogin();
-            await loadEventFromUrl();
+        document.addEventListener('DOMContentLoaded', () => {
+            // Setup imediato da interface
             setupEventListeners();
+            updateTopNav();
+            
+            // Inicialização rápida sem await
+            initializeApp();
         });
+
+        async function initializeApp() {
+            try {
+                // Verificar se há evento na URL primeiro (mais rápido)
+                const urlParams = new URLSearchParams(window.location.search);
+                const eventId = urlParams.get('event');
+                
+                if (eventId) {
+                    // Carregar evento diretamente
+                    await loadEventFromUrl();
+                } else {
+                    // Mostrar tela de boas-vindas imediatamente
+                    document.getElementById('loadingScreen').classList.add('hidden');
+                    document.getElementById('welcomeScreen').classList.remove('hidden');
+                }
+                
+                // Verificar login salvo em background
+                checkSavedLogin();
+                
+            } catch (error) {
+                // Em caso de erro, mostrar tela de boas-vindas
+                document.getElementById('loadingScreen').classList.add('hidden');
+                document.getElementById('welcomeScreen').classList.remove('hidden');
+            }
+        }
 
         // Setup Event Listeners
         function setupEventListeners() {
@@ -922,13 +1205,33 @@
             }
             
             if (eventId) {
-                await loadGuestEvent(eventId);
+                // Mostrar interface básica imediatamente
+                document.getElementById('loadingScreen').classList.add('hidden');
+                document.getElementById('guestContent').innerHTML = `
+                    <div style="text-align: center; padding: 40px;">
+                        <h2>🎉 Carregando evento...</h2>
+                        <div class="loading-spinner" style="margin: 20px auto;"></div>
+                    </div>
+                `;
+                
+                try {
+                    await loadGuestEvent(eventId);
+                } catch (error) {
+                    console.error('Erro ao carregar evento:', error);
+                    document.getElementById('guestContent').innerHTML = `
+                        <div style="text-align: center; padding: 40px;">
+                            <h2>❌ Evento não encontrado</h2>
+                            <p style="color: #666;">O link pode estar incorreto ou o evento foi removido.</p>
+                        </div>
+                    `;
+                }
             } else {
                 // Show welcome screen if no event
                 document.getElementById('loadingScreen').classList.add('hidden');
                 document.getElementById('welcomeScreen').classList.remove('hidden');
-                updateTopNav();
             }
+            
+            updateTopNav();
         }
 
         // Load Guest Event
@@ -1432,50 +1735,87 @@
 
         async function loadUserEvents() {
             try {
+                // Carregar eventos básicos primeiro (sem respostas)
                 const { data: events, error } = await supabase
                     .from('events')
-                    .select(`
-                        *,
-                        responses(*)
-                    `)
+                    .select('*')
                     .eq('user_id', currentUser.id)
                     .order('created_at', { ascending: false });
 
                 if (error) throw error;
 
-                const eventsHtml = events.map(event => {
-                    const responseCount = event.responses?.length || 0;
-                    const confirmedCount = event.responses?.filter(r => r.attending).length || 0;
-                    const eventUrl = `${window.location.origin}${window.location.pathname}?event=${event.id}`;
-                    const statusText = event.active !== false ? 'Ativo' : 'Inativo';
-                    const statusClass = event.active !== false ? 'success' : 'danger';
-                    
-                    return `
-                        <div class="event-card">
-                            <h3>${event.name} <span class="btn btn-small btn-${statusClass}" style="font-size: 10px; padding: 2px 8px;">${statusText}</span></h3>
-                            <p><strong>Data:</strong> ${formatDate(new Date(event.event_date))}</p>
-                            <p><strong>Confirmações:</strong> ${confirmedCount}/${event.event_limit === 0 ? '∞' : event.event_limit}</p>
-                            <p><strong>Total de respostas:</strong> ${responseCount}</p>
-                            <div style="margin: 10px 0;">
-                                <p><strong>Link:</strong></p>
-                                <small><a href="${eventUrl}" target="_blank" style="word-break: break-all;">${eventUrl}</a></small>
-                            </div>
-                            <div style="margin-top: 15px; display: flex; gap: 5px; flex-wrap: wrap;">
-                                <button class="btn btn-small btn-secondary" onclick="editEvent('${event.id}')">Editar</button>
-                                <button class="btn btn-small btn-primary" onclick="viewResponses('${event.id}')">Respostas</button>
-                                <button class="btn btn-small btn-success" onclick="downloadReport('${event.id}')">PDF</button>
-                                <button class="btn btn-small ${event.active !== false ? 'btn-danger' : 'btn-success'}" onclick="toggleEventStatus('${event.id}', ${event.active === false})">${event.active !== false ? 'Desativar' : 'Ativar'}</button>
-                                <button class="btn btn-small btn-danger" onclick="deleteEventWithPassword('${event.id}')">Excluir</button>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
+                // Mostrar eventos imediatamente com contadores básicos
+                renderUserEventsQuick(events);
 
-                document.getElementById('userEvents').innerHTML = eventsHtml || '<p>Nenhum evento criado ainda.</p>';
+                // Carregar respostas em background
+                loadEventResponsesBackground(events);
+
             } catch (error) {
+                document.getElementById('userEvents').innerHTML = '<p>Erro ao carregar eventos.</p>';
                 showNotification('Erro ao carregar eventos: ' + error.message, 'error', 'userNotification');
             }
         }
+
+        function renderUserEventsQuick(events) {
+            const eventsHtml = events.map(event => {
+                const eventUrl = `${window.location.origin}${window.location.pathname}?event=${event.id}`;
+                const statusText = event.active !== false ? 'Ativo' : 'Inativo';
+                const statusClass = event.active !== false ? 'success' : 'danger';
+                
+                return `
+                    <div class="event-card" id="event-${event.id}">
+                        <h3>${event.name} <span class="btn btn-small btn-${statusClass}" style="font-size: 10px; padding: 2px 8px;">${statusText}</span></h3>
+                        <p><strong>Data:</strong> ${formatDate(new Date(event.event_date))}</p>
+                        <p><strong>Confirmações:</strong> <span id="confirmed-${event.id}">Carregando...</span>/${event.event_limit === 0 ? '∞' : event.event_limit}</p>
+                        <p><strong>Total de respostas:</strong> <span id="total-${event.id}">Carregando...</span></p>
+                        <div style="margin: 10px 0;">
+                            <p><strong>Link:</strong></p>
+                            <small><a href="${eventUrl}" target="_blank" style="word-break: break-all;">${eventUrl}</a></small>
+                        </div>
+                        <div style="margin-top: 15px; display: flex; gap: 5px; flex-wrap: wrap;">
+                            <button class="btn btn-small btn-secondary" onclick="editEvent('${event.id}')">Editar</button>
+                            <button class="btn btn-small btn-primary" onclick="viewResponses('${event.id}')">Respostas</button>
+                            <button class="btn btn-small btn-success" onclick="downloadReport('${event.id}')">PDF</button>
+                            <button class="btn btn-small ${event.active !== false ? 'btn-danger' : 'btn-success'}" onclick="toggleEventStatus('${event.id}', ${event.active === false})">${event.active !== false ? 'Desativar' : 'Ativar'}</button>
+                            <button class="btn btn-small btn-danger" onclick="deleteEventWithPassword('${event.id}')">Excluir</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('userEvents').innerHTML = eventsHtml || '<p>Nenhum evento criado ainda.</p>';
+        }
+
+        async function loadEventResponsesBackground(events) {
+            try {
+                // Carregar todas as respostas de uma vez
+                const eventIds = events.map(e => e.id);
+                const { data: allResponses } = await supabase
+                    .from('responses')
+                    .select('*')
+                    .in('event_id', eventIds);
+
+                // Atualizar contadores para cada evento
+                events.forEach(event => {
+                    const eventResponses = allResponses?.filter(r => r.event_id === event.id) || [];
+                    const confirmedCount = eventResponses.filter(r => r.attending).length;
+                    const totalCount = eventResponses.length;
+
+                    // Atualizar elementos na tela
+                    const confirmedElement = document.getElementById(`confirmed-${event.id}`);
+                    const totalElement = document.getElementById(`total-${event.id}`);
+                    
+                    if (confirmedElement) confirmedElement.textContent = confirmedCount;
+                    if (totalElement) totalElement.textContent = totalCount;
+                });
+
+            } catch (error) {
+                // Em caso de erro, manter "Carregando..." nos contadores
+                console.error('Erro ao carregar respostas:', error);
+            }
+        }
+
+
 
         async function handleEventSubmit(e) {
             e.preventDefault();
@@ -1867,15 +2207,18 @@
         }
 
         async function loadAdminData() {
+            // Carregar apenas dados essenciais primeiro
             try {
-                const { data: users } = await supabase.from('users').select('*');
-                const { data: events } = await supabase.from('events').select('*');
-                const { data: responses } = await supabase.from('responses').select('*');
+                // Carregar usuários pendentes primeiro (mais importante)
+                const { data: users } = await supabase
+                    .from('users')
+                    .select('*')
+                    .order('created_at', { ascending: false });
 
                 const pendingUsers = users?.filter(u => !u.approved) || [];
                 const approvedUsers = users?.filter(u => u.approved) || [];
 
-                // Pending requests
+                // Mostrar usuários pendentes imediatamente
                 const pendingHtml = pendingUsers.map(user => `
                     <div class="user-management-item">
                         <div class="user-info">
@@ -1891,43 +2234,74 @@
 
                 document.getElementById('pendingRequests').innerHTML = pendingHtml || '<p>Nenhuma solicitação pendente.</p>';
 
-                // User management (only for full admin)
+                // Carregar outros dados em background
                 if (currentUser.isAdmin) {
-                    const usersHtml = approvedUsers.map(user => `
-                        <div class="user-management-item">
-                            <div class="user-info">
-                                <strong class="editable-field" onclick="editUserField('${user.id}', 'name', this)">${user.name}</strong><br>
-                                <small>
-                                    @<span class="editable-field" onclick="editUserField('${user.id}', 'username', this)">${user.username}</span> • 
-                                    <span class="editable-field" onclick="editUserField('${user.id}', 'phone', this)">${user.phone}</span>
-                                </small><br>
-                                <small>Senha: <span class="editable-field" onclick="editUserField('${user.id}', 'password', this)" style="font-family: monospace;">${user.password}</span></small>
-                                ${user.is_moderator ? '<br><span style="background: #667eea; color: white; padding: 2px 6px; border-radius: 10px; font-size: 10px;">MODERADOR</span>' : ''}
-                            </div>
-                            <div class="user-actions">
-                                <button class="btn btn-small ${user.active ? 'btn-danger' : 'btn-success'}" onclick="toggleUserStatus('${user.id}', ${!user.active})">${user.active ? 'Desativar' : 'Ativar'}</button>
-                                ${currentUser.isAdmin ? (!user.is_moderator ? `<button class="btn btn-small btn-primary" onclick="toggleModerator('${user.id}', true)">Tornar Moderador</button>` : `<button class="btn btn-small btn-secondary" onclick="toggleModerator('${user.id}', false)">Remover Moderador</button>`) : ''}
-                                <button class="btn btn-small btn-secondary" onclick="showEditUserModal('${user.id}')">Editar</button>
-                                ${currentUser.isAdmin ? `<button class="btn btn-small" style="background: #28a745; color: white;" onclick="loginAsUser('${user.id}')">Entrar Como</button>` : ''}
-                            </div>
-                        </div>
-                    `).join('');
-
-                    document.getElementById('userManagement').innerHTML = usersHtml || '<p>Nenhum usuário aprovado.</p>';
-
-                    // All events
-                    const eventsHtml = events?.map(event => `
-                        <div style="padding: 15px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 10px;">
-                            <strong>${event.name}</strong><br>
-                            <small>Data: ${formatDate(new Date(event.event_date))} • Criado por: ${users?.find(u => u.id === event.user_id)?.name || 'Usuário removido'}</small><br>
-                            <small>Status: ${event.active !== false ? 'Ativo' : 'Inativo'}</small>
-                        </div>
-                    `).join('') || '<p>Nenhum evento criado.</p>';
-
-                    document.getElementById('allEvents').innerHTML = eventsHtml;
+                    loadAdminDataBackground(approvedUsers);
                 }
+
             } catch (error) {
+                document.getElementById('pendingRequests').innerHTML = '<p>Erro ao carregar solicitações pendentes.</p>';
                 showNotification('Erro ao carregar dados: ' + error.message, 'error', 'adminNotification');
+            }
+        }
+
+        async function loadAdminDataBackground(approvedUsers) {
+            try {
+                // Mostrar indicador de carregamento para seções secundárias
+                if (document.getElementById('userManagement')) {
+                    document.getElementById('userManagement').innerHTML = '<div style="text-align: center; padding: 10px;"><div class="loading-spinner"></div></div>';
+                }
+                if (document.getElementById('allEvents')) {
+                    document.getElementById('allEvents').innerHTML = '<div style="text-align: center; padding: 10px;"><div class="loading-spinner"></div></div>';
+                }
+
+                // Carregar eventos em paralelo
+                const { data: events } = await supabase
+                    .from('events')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                // Renderizar usuários aprovados
+                const usersHtml = approvedUsers.map(user => `
+                    <div class="user-management-item">
+                        <div class="user-info">
+                            <strong class="editable-field" onclick="editUserField('${user.id}', 'name', this)">${user.name}</strong><br>
+                            <small>
+                                @<span class="editable-field" onclick="editUserField('${user.id}', 'username', this)">${user.username}</span> • 
+                                <span class="editable-field" onclick="editUserField('${user.id}', 'phone', this)">${user.phone}</span>
+                            </small><br>
+                            <small>Senha: <span class="editable-field" onclick="editUserField('${user.id}', 'password', this)" style="font-family: monospace;">${user.password}</span></small>
+                            ${user.is_moderator ? '<br><span style="background: #667eea; color: white; padding: 2px 6px; border-radius: 10px; font-size: 10px;">MODERADOR</span>' : ''}
+                        </div>
+                        <div class="user-actions">
+                            <button class="btn btn-small ${user.active ? 'btn-danger' : 'btn-success'}" onclick="toggleUserStatus('${user.id}', ${!user.active})">${user.active ? 'Desativar' : 'Ativar'}</button>
+                            ${currentUser.isAdmin ? (!user.is_moderator ? `<button class="btn btn-small btn-primary" onclick="toggleModerator('${user.id}', true)">Tornar Moderador</button>` : `<button class="btn btn-small btn-secondary" onclick="toggleModerator('${user.id}', false)">Remover Moderador</button>`) : ''}
+                            <button class="btn btn-small btn-secondary" onclick="showEditUserModal('${user.id}')">Editar</button>
+                            ${currentUser.isAdmin ? `<button class="btn btn-small" style="background: #28a745; color: white;" onclick="loginAsUser('${user.id}')">Entrar Como</button>` : ''}
+                        </div>
+                    </div>
+                `).join('');
+
+                document.getElementById('userManagement').innerHTML = usersHtml || '<p>Nenhum usuário aprovado.</p>';
+
+                // Renderizar eventos
+                const eventsHtml = events?.map(event => `
+                    <div style="padding: 15px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 10px;">
+                        <strong>${event.name}</strong><br>
+                        <small>Data: ${formatDate(new Date(event.event_date))} • Criado por: ${approvedUsers?.find(u => u.id === event.user_id)?.name || 'Usuário removido'}</small><br>
+                        <small>Status: ${event.active !== false ? 'Ativo' : 'Inativo'}</small>
+                    </div>
+                `).join('') || '<p>Nenhum evento criado.</p>';
+
+                document.getElementById('allEvents').innerHTML = eventsHtml;
+
+            } catch (error) {
+                if (document.getElementById('userManagement')) {
+                    document.getElementById('userManagement').innerHTML = '<p>Erro ao carregar usuários.</p>';
+                }
+                if (document.getElementById('allEvents')) {
+                    document.getElementById('allEvents').innerHTML = '<p>Erro ao carregar eventos.</p>';
+                }
             }
         }
 
@@ -2128,13 +2502,12 @@
                 
                 showNotification(`Entrando como ${user.name}...`, 'success', 'adminNotification');
                 
-                setTimeout(() => {
-                    if (user.is_moderator) {
-                        showAdminDashboard();
-                    } else {
-                        showUserDashboard();
-                    }
-                }, 1500);
+                // Navegar imediatamente sem delay
+                if (user.is_moderator) {
+                    await showAdminDashboard();
+                } else {
+                    await showUserDashboard();
+                }
             } catch (error) {
                 showNotification('Erro ao entrar como usuário: ' + error.message, 'error', 'adminNotification');
             }
@@ -2327,5 +2700,5 @@
             document.getElementById('previewImage').src = '';
         }
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'975dbd83a29777da',t:'MTc1NjMyMDQ3Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'975dcc6f566277da',t:'MTc1NjMyMTA4OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
