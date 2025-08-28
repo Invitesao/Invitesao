@@ -299,7 +299,7 @@
             border-radius: 15px;
             margin: 20px 0;
             text-align: center;
-            color: white;
+            color: #333;
         }
 
         .response-status.negative {
@@ -539,11 +539,41 @@
             }
         }
 
+        .event-title-section {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px 0;
+        }
+
+        .event-title {
+            font-size: 2.2em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            line-height: 1.2;
+        }
+
+        .event-date {
+            color: #667eea;
+            font-size: 1.3em;
+            font-weight: 600;
+        }
+
         /* Responsividade para smartphones */
         @media (max-width: 768px) {
             body {
                 padding: 8px;
                 font-size: 14px;
+            }
+            
+            .event-title {
+                font-size: 2.8em;
+                margin-bottom: 20px;
+            }
+            
+            .event-date {
+                font-size: 1.5em;
             }
             
             .container {
@@ -624,20 +654,22 @@
             
             .countdown-grid {
                 grid-template-columns: repeat(4, 1fr);
-                gap: 8px;
+                gap: 12px;
                 max-width: 100%;
             }
             
             .countdown-item {
-                padding: 10px 4px;
+                padding: 18px 8px;
             }
             
             .countdown-number {
-                font-size: 1.3em;
+                font-size: 2em;
+                font-weight: bold;
             }
             
             .countdown-label {
-                font-size: 0.55em;
+                font-size: 0.75em;
+                font-weight: 600;
             }
             
             .modal-content {
@@ -981,6 +1013,41 @@
                             <option value="noiva">💐 Versão da Noiva (Rosa)</option>
                         </select>
                     </div>
+                    <div class="form-group">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="showGuestType" checked>
+                            <label for="showGuestType">Mostrar opção "Convidado do Noivo/Noiva" (desmarque para eventos que não são casamentos)</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Opções de Presentes</label>
+                        <div class="checkbox-group" style="margin-bottom: 10px;">
+                            <input type="checkbox" id="enableGiftList">
+                            <label for="enableGiftList">Ativar lista de presentes sugeridos</label>
+                        </div>
+                        <div id="giftListSection" class="hidden" style="margin-left: 20px; margin-bottom: 15px;">
+                            <div class="checkbox-group" style="margin-bottom: 10px;">
+                                <input type="checkbox" id="allowMultipleGifts">
+                                <label for="allowMultipleGifts">Permitir que vários convidados escolham o mesmo presente</label>
+                            </div>
+                            <label>Lista de Presentes (um por linha)</label>
+                            <textarea id="giftListItems" rows="5" placeholder="Digite os presentes, um por linha&#10;Exemplo:&#10;Jogo de panelas&#10;Micro-ondas&#10;Aspirador"></textarea>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="enableGiftMessage">
+                            <label for="enableGiftMessage">Ativar mensagem para transferência bancária</label>
+                        </div>
+                        <div id="giftMessageSection" class="hidden" style="margin-left: 20px;">
+                            <label>Mensagem para Transferência</label>
+                            <textarea id="giftMessage" rows="6" placeholder="A sua presença já é um presente, mas caso ainda assim desejar nos presentear, pedimos que o faça por transferência.&#10;&#10;IBAN: xxxxxxxxxxxxxxxxxx&#10;Titular: XXXXXXXXXXXX&#10;&#10;Por favor enviar o comprovativo para o número abaixo.&#10;xxxxxxxxxx">A sua presença já é um presente, mas caso ainda assim desejar nos presentear, pedimos que o faça por transferência.
+
+IBAN: xxxxxxxxxxxxxxxxxx
+Titular: XXXXXXXXXXXX
+
+Por favor enviar o comprovativo para o número abaixo.
+xxxxxxxxxx</textarea>
+                        </div>
+                    </div>
                     <button type="submit" class="btn btn-primary">Salvar Evento</button>
                 </form>
             </div>
@@ -1123,6 +1190,25 @@
             document.getElementById('registerForm').addEventListener('submit', handleRegister);
             document.getElementById('eventForm').addEventListener('submit', handleEventSubmit);
             document.getElementById('editUserForm').addEventListener('submit', handleEditUser);
+            
+            // Gift options listeners
+            document.getElementById('enableGiftList').addEventListener('change', function() {
+                const section = document.getElementById('giftListSection');
+                if (this.checked) {
+                    section.classList.remove('hidden');
+                } else {
+                    section.classList.add('hidden');
+                }
+            });
+            
+            document.getElementById('enableGiftMessage').addEventListener('change', function() {
+                const section = document.getElementById('giftMessageSection');
+                if (this.checked) {
+                    section.classList.remove('hidden');
+                } else {
+                    section.classList.add('hidden');
+                }
+            });
         }
 
         // Check Saved Login with persistent session
@@ -1291,6 +1377,11 @@
                     }
                 }
                 
+                let giftSection = '';
+                if (guestResponse.attending && (event.enable_gift_list || event.enable_gift_message)) {
+                    giftSection = await renderGiftSection(event, guestResponse.guest_name);
+                }
+                
                 responseSection = `
                     <div class="response-status ${statusClass}" id="responseStatus">
                         <h3>${statusText}</h3>
@@ -1298,6 +1389,7 @@
                         ${companionInfo}
                         <p style="margin-top: 15px;">Obrigado pela confirmação!</p>
                     </div>
+                    ${giftSection}
                 `;
                 
                 // Auto-hide after 5 minutes
@@ -1326,6 +1418,7 @@
                             </div>
                         </div>
                         <div id="guestDetailsForm" class="hidden">
+                            ${event.show_guest_type !== false ? `
                             <div class="form-group">
                                 <label style="color: #333;">Você é convidado(a) do(a):</label>
                                 <div class="radio-group">
@@ -1339,9 +1432,10 @@
                                     </label>
                                 </div>
                             </div>
+                            ` : ''}
                             <div class="form-group">
                                 <label style="color: #333;">Seu nome completo</label>
-                                <input type="text" id="guestName" required>
+                                <input type="text" id="guestName" placeholder="Escreva aqui" required>
                             </div>
                             <div id="companionsSection" class="companions-section hidden">
                                 <div class="form-group">
@@ -1364,9 +1458,11 @@
             }
 
             document.getElementById('guestContent').innerHTML = `
-                <h2 style="text-align: center; margin-bottom: 20px; color: #333;">${event.name}</h2>
-                <div style="text-align: center; margin-bottom: 20px; color: #333;">
-                    <strong style="font-size: 1.2em;">${formatDate(eventDate)}</strong>
+                <div class="event-title-section">
+                    <h1 class="event-title">${event.name}</h1>
+                    <div class="event-date">
+                        <strong>${formatDate(eventDate)}</strong>
+                    </div>
                 </div>
                 ${event.photo ? `<img src="${event.photo}" alt="Foto dos Noivos" class="event-photo">` : ''}
                 
@@ -1378,6 +1474,122 @@
             `;
 
             startCountdown(eventDate);
+        }
+
+        // Render Gift Section
+        async function renderGiftSection(event, guestName) {
+            let html = `
+                <div class="guest-form" style="margin-top: 20px;">
+                    <h3 style="color: #333; text-align: center; margin-bottom: 20px;">🎁 Gostaria de nos presentear?</h3>
+            `;
+            
+            if (event.enable_gift_list && event.gift_list_items) {
+                const gifts = event.gift_list_items.split('\n').filter(g => g.trim());
+                
+                // Get selected gifts
+                const { data: selectedGifts } = await supabase
+                    .from('gift_selections')
+                    .select('*')
+                    .eq('event_id', event.id);
+                
+                const guestSelection = selectedGifts?.find(g => g.guest_name === guestName);
+                
+                html += `
+                    <div style="margin-bottom: 20px;">
+                        <h4 style="color: #333;">Lista de Presentes Sugeridos:</h4>
+                        <div id="giftList">
+                `;
+                
+                gifts.forEach((gift, index) => {
+                    const isSelected = selectedGifts?.some(g => g.gift_item === gift.trim() && g.guest_name !== guestName);
+                    const isMySelection = guestSelection?.gift_item === gift.trim();
+                    const disabled = !event.allow_multiple_gifts && isSelected && !isMySelection;
+                    
+                    html += `
+                        <div style="padding: 10px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 8px; ${disabled ? 'opacity: 0.5;' : ''} ${isMySelection ? 'background: #e8f5e8; border-color: #4caf50;' : ''}">
+                            <label style="display: flex; align-items: center; cursor: ${disabled ? 'not-allowed' : 'pointer'};">
+                                <input type="radio" name="giftSelection" value="${gift.trim()}" ${disabled ? 'disabled' : ''} ${isMySelection ? 'checked' : ''} onchange="selectGift('${event.id}', '${guestName}', this.value)" style="margin-right: 10px;">
+                                <span style="color: #333;">${gift.trim()} ${disabled ? '(Já escolhido)' : ''} ${isMySelection ? '✓' : ''}</span>
+                            </label>
+                        </div>
+                    `;
+                });
+                
+                html += `
+                        </div>
+                        ${guestSelection ? `<button class="btn btn-secondary btn-small" onclick="removeGiftSelection('${event.id}', '${guestName}')" style="margin-top: 10px;">Remover Seleção</button>` : ''}
+                    </div>
+                `;
+            }
+            
+            if (event.enable_gift_message && event.gift_message) {
+                html += `
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 4px solid #667eea;">
+                        <h4 style="color: #333; margin-bottom: 10px;">💳 Transferência Bancária</h4>
+                        <div style="color: #555; white-space: pre-line; font-size: 14px;">${event.gift_message}</div>
+                    </div>
+                `;
+            }
+            
+            html += `</div>`;
+            return html;
+        }
+
+        // Select Gift
+        async function selectGift(eventId, guestName, giftItem) {
+            try {
+                // Remove previous selection
+                await supabase
+                    .from('gift_selections')
+                    .delete()
+                    .eq('event_id', eventId)
+                    .eq('guest_name', guestName);
+                
+                // Add new selection
+                const { error } = await supabase
+                    .from('gift_selections')
+                    .insert([{
+                        event_id: eventId,
+                        guest_name: guestName,
+                        gift_item: giftItem,
+                        selected_at: new Date().toISOString()
+                    }]);
+                
+                if (error) throw error;
+                
+                showNotification('Presente selecionado!', 'success');
+                
+                // Reload gift section
+                setTimeout(async () => {
+                    await renderGuestEvent(currentEvent);
+                }, 1000);
+                
+            } catch (error) {
+                showNotification('Erro ao selecionar presente: ' + error.message, 'error');
+            }
+        }
+
+        // Remove Gift Selection
+        async function removeGiftSelection(eventId, guestName) {
+            try {
+                const { error } = await supabase
+                    .from('gift_selections')
+                    .delete()
+                    .eq('event_id', eventId)
+                    .eq('guest_name', guestName);
+                
+                if (error) throw error;
+                
+                showNotification('Seleção removida!', 'success');
+                
+                // Reload gift section
+                setTimeout(async () => {
+                    await renderGuestEvent(currentEvent);
+                }, 1000);
+                
+            } catch (error) {
+                showNotification('Erro ao remover seleção: ' + error.message, 'error');
+            }
         }
 
         // Start Countdown
@@ -1462,7 +1674,7 @@
             const companionDiv = document.createElement('div');
             companionDiv.className = 'companion-item';
             companionDiv.innerHTML = `
-                <input type="text" placeholder="Nome do acompanhante" class="companion-input">
+                <input type="text" placeholder="Escreva aqui" class="companion-input">
                 <button type="button" class="btn btn-small btn-danger" onclick="removeCompanion(this)">Remover</button>
             `;
             
@@ -1484,12 +1696,14 @@
                 return;
             }
 
-            if (!guestTypeRadio) {
-                showNotification('Por favor, selecione se você é convidado do noivo ou da noiva.', 'error');
-                return;
+            let guestType = 'geral';
+            if (currentEvent.show_guest_type !== false) {
+                if (!guestTypeRadio) {
+                    showNotification('Por favor, selecione se você é convidado do noivo ou da noiva.', 'error');
+                    return;
+                }
+                guestType = guestTypeRadio.value;
             }
-
-            const guestType = guestTypeRadio.value;
             let companions = 0;
             let companionNames = [];
 
@@ -1833,6 +2047,12 @@
                 max_companions: parseInt(document.getElementById('maxCompanions').value),
                 description: document.getElementById('eventDescription').value,
                 site_version: document.getElementById('siteVersion').value,
+                show_guest_type: document.getElementById('showGuestType').checked,
+                enable_gift_list: document.getElementById('enableGiftList').checked,
+                gift_list_items: document.getElementById('giftListItems').value,
+                allow_multiple_gifts: document.getElementById('allowMultipleGifts').checked,
+                enable_gift_message: document.getElementById('enableGiftMessage').checked,
+                gift_message: document.getElementById('giftMessage').value,
                 photo: eventPhotoBase64,
                 user_id: currentUser.id
             };
@@ -1888,6 +2108,22 @@
                 document.getElementById('maxCompanions').value = event.max_companions || 5;
                 document.getElementById('eventDescription').value = event.description || '';
                 document.getElementById('siteVersion').value = event.site_version || 'noivos';
+                document.getElementById('showGuestType').checked = event.show_guest_type !== false;
+                
+                // Gift options
+                document.getElementById('enableGiftList').checked = event.enable_gift_list || false;
+                document.getElementById('giftListItems').value = event.gift_list_items || '';
+                document.getElementById('allowMultipleGifts').checked = event.allow_multiple_gifts || false;
+                document.getElementById('enableGiftMessage').checked = event.enable_gift_message || false;
+                document.getElementById('giftMessage').value = event.gift_message || 'A sua presença já é um presente, mas caso ainda assim desejar nos presentear, pedimos que o faça por transferência.\n\nIBAN: xxxxxxxxxxxxxxxxxx\nTitular: XXXXXXXXXXXX\n\nPor favor enviar o comprovativo para o número abaixo.\nxxxxxxxxxx';
+                
+                // Show/hide sections based on checkboxes
+                if (event.enable_gift_list) {
+                    document.getElementById('giftListSection').classList.remove('hidden');
+                }
+                if (event.enable_gift_message) {
+                    document.getElementById('giftMessageSection').classList.remove('hidden');
+                }
                 
                 // Carregar foto se existir
                 if (event.photo) {
@@ -1929,16 +2165,45 @@
 
         async function deleteEvent(eventId) {
             try {
-                const { error } = await supabase
+                // Eliminar respostas relacionadas primeiro
+                const { error: responsesError } = await supabase
+                    .from('responses')
+                    .delete()
+                    .eq('event_id', eventId);
+
+                if (responsesError && !responsesError.message.includes('No rows found')) {
+                    console.warn('Aviso ao eliminar respostas:', responsesError);
+                }
+
+                // Eliminar seleções de presentes relacionadas
+                const { error: giftsError } = await supabase
+                    .from('gift_selections')
+                    .delete()
+                    .eq('event_id', eventId);
+
+                if (giftsError && !giftsError.message.includes('No rows found')) {
+                    console.warn('Aviso ao eliminar seleções de presentes:', giftsError);
+                }
+
+                // Eliminar o evento
+                const { error: eventError } = await supabase
                     .from('events')
                     .delete()
                     .eq('id', eventId);
 
-                if (error) throw error;
+                if (eventError) throw eventError;
+
+                // Limpar localStorage
+                const responses = JSON.parse(localStorage.getItem('eventResponses') || '{}');
+                if (responses[eventId]) {
+                    delete responses[eventId];
+                    localStorage.setItem('eventResponses', JSON.stringify(responses));
+                }
 
                 showNotification('Evento excluído!', 'success', 'userNotification');
                 await loadUserEvents();
             } catch (error) {
+                console.error('Erro detalhado:', error);
                 showNotification('Erro ao excluir: ' + error.message, 'error', 'userNotification');
             }
         }
@@ -1977,9 +2242,11 @@
                                 <div style="padding: 15px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
                                     <div>
                                         <strong>${r.guest_name}</strong>
+                                        ${event.show_guest_type !== false ? `
                                         <span style="margin-left: 10px; padding: 2px 6px; border-radius: 10px; font-size: 10px; background: ${r.guest_type === 'noivo' ? '#667eea' : '#ff9a9e'}; color: white;">
                                             ${r.guest_type === 'noivo' ? '🤵' : '👰'}
                                         </span>
+                                        ` : ''}
                                         ${r.companions > 0 ? `<br><small>+ ${r.companions} acompanhante(s)</small>` : ''}
                                         ${r.companion_names && r.companion_names.length > 0 ? `<br><small>Nomes: ${r.companion_names.join(', ')}</small>` : ''}
                                     </div>
@@ -1994,9 +2261,11 @@
                                 <div style="padding: 15px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
                                     <div>
                                         <strong>${r.guest_name}</strong>
+                                        ${event.show_guest_type !== false ? `
                                         <span style="margin-left: 10px; padding: 2px 6px; border-radius: 10px; font-size: 10px; background: ${r.guest_type === 'noivo' ? '#667eea' : '#ff9a9e'}; color: white;">
                                             ${r.guest_type === 'noivo' ? '🤵' : '👰'}
                                         </span>
+                                        ` : ''}
                                     </div>
                                     <button class="btn btn-small btn-danger" onclick="deleteResponseWithPassword('${eventId}', '${r.guest_name}')">🗑️</button>
                                 </div>
@@ -2025,14 +2294,28 @@
 
         async function deleteResponse(eventId, guestName) {
             try {
-                const { error } = await supabase
+                // Eliminar da tabela responses
+                const { error: responseError } = await supabase
                     .from('responses')
                     .delete()
                     .eq('event_id', eventId)
                     .eq('guest_name', guestName);
 
-                if (error) throw error;
+                if (responseError) throw responseError;
 
+                // Eliminar seleções de presentes relacionadas
+                const { error: giftError } = await supabase
+                    .from('gift_selections')
+                    .delete()
+                    .eq('event_id', eventId)
+                    .eq('guest_name', guestName);
+
+                // Não falhar se não houver seleções de presentes
+                if (giftError && !giftError.message.includes('No rows found')) {
+                    console.warn('Aviso ao eliminar seleções de presentes:', giftError);
+                }
+
+                // Limpar localStorage
                 const responses = JSON.parse(localStorage.getItem('eventResponses') || '{}');
                 if (responses[eventId] && responses[eventId].guest_name === guestName) {
                     delete responses[eventId];
@@ -2042,6 +2325,7 @@
                 showNotification(`Resposta eliminada!`, 'success', 'userNotification');
                 await viewResponses(eventId);
             } catch (error) {
+                console.error('Erro detalhado:', error);
                 showNotification('Erro ao eliminar: ' + error.message, 'error', 'userNotification');
             }
         }
@@ -2067,15 +2351,20 @@
                 const attending = responses.filter(r => r.attending);
                 const notAttending = responses.filter(r => !r.attending);
                 
-                // Separar por tipo de convidado
-                const attendingNoivo = attending.filter(r => r.guest_type === 'noivo');
-                const attendingNoiva = attending.filter(r => r.guest_type === 'noiva');
-                const notAttendingNoivo = notAttending.filter(r => r.guest_type === 'noivo');
-                const notAttendingNoiva = notAttending.filter(r => r.guest_type === 'noiva');
-                
                 const totalCompanions = attending.reduce((sum, r) => sum + (r.companions || 0), 0);
-                const totalCompanionsNoivo = attendingNoivo.reduce((sum, r) => sum + (r.companions || 0), 0);
-                const totalCompanionsNoiva = attendingNoiva.reduce((sum, r) => sum + (r.companions || 0), 0);
+                
+                // Separar por tipo de convidado apenas se a opção estiver ativa
+                let attendingNoivo = [], attendingNoiva = [], notAttendingNoivo = [], notAttendingNoiva = [];
+                let totalCompanionsNoivo = 0, totalCompanionsNoiva = 0;
+                
+                if (event.show_guest_type !== false) {
+                    attendingNoivo = attending.filter(r => r.guest_type === 'noivo');
+                    attendingNoiva = attending.filter(r => r.guest_type === 'noiva');
+                    notAttendingNoivo = notAttending.filter(r => r.guest_type === 'noivo');
+                    notAttendingNoiva = notAttending.filter(r => r.guest_type === 'noiva');
+                    totalCompanionsNoivo = attendingNoivo.reduce((sum, r) => sum + (r.companions || 0), 0);
+                    totalCompanionsNoiva = attendingNoiva.reduce((sum, r) => sum + (r.companions || 0), 0);
+                }
 
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF();
@@ -2222,41 +2511,63 @@
                 };
 
                 // CONVIDADOS CONFIRMADOS
-                if (attendingNoivo.length > 0) {
-                    yPos = addGuestSection(
-                        attendingNoivo, 
-                        `CONVIDADOS DO NOIVO CONFIRMADOS (+${totalCompanionsNoivo} acompanhantes)`, 
-                        primaryColor, 
-                        'NOIVO'
-                    );
-                }
+                if (event.show_guest_type !== false) {
+                    // Versão com separação por noivo/noiva
+                    if (attendingNoivo.length > 0) {
+                        yPos = addGuestSection(
+                            attendingNoivo, 
+                            `CONVIDADOS DO NOIVO CONFIRMADOS (+${totalCompanionsNoivo} acompanhantes)`, 
+                            primaryColor, 
+                            'NOIVO'
+                        );
+                    }
 
-                if (attendingNoiva.length > 0) {
-                    yPos = addGuestSection(
-                        attendingNoiva, 
-                        `CONVIDADOS DA NOIVA CONFIRMADOS (+${totalCompanionsNoiva} acompanhantes)`, 
-                        accentColor, 
-                        'NOIVA'
-                    );
-                }
+                    if (attendingNoiva.length > 0) {
+                        yPos = addGuestSection(
+                            attendingNoiva, 
+                            `CONVIDADOS DA NOIVA CONFIRMADOS (+${totalCompanionsNoiva} acompanhantes)`, 
+                            accentColor, 
+                            'NOIVA'
+                        );
+                    }
 
-                // CONVIDADOS QUE NÃO COMPARECERÃO
-                if (notAttendingNoivo.length > 0) {
-                    yPos = addGuestSection(
-                        notAttendingNoivo, 
-                        'CONVIDADOS DO NOIVO QUE NAO COMPARECERAO', 
-                        lightGray, 
-                        'NOIVO'
-                    );
-                }
+                    // CONVIDADOS QUE NÃO COMPARECERÃO
+                    if (notAttendingNoivo.length > 0) {
+                        yPos = addGuestSection(
+                            notAttendingNoivo, 
+                            'CONVIDADOS DO NOIVO QUE NAO COMPARECERAO', 
+                            lightGray, 
+                            'NOIVO'
+                        );
+                    }
 
-                if (notAttendingNoiva.length > 0) {
-                    yPos = addGuestSection(
-                        notAttendingNoiva, 
-                        'CONVIDADOS DA NOIVA QUE NAO COMPARECERAO', 
-                        lightGray, 
-                        'NOIVA'
-                    );
+                    if (notAttendingNoiva.length > 0) {
+                        yPos = addGuestSection(
+                            notAttendingNoiva, 
+                            'CONVIDADOS DA NOIVA QUE NAO COMPARECERAO', 
+                            lightGray, 
+                            'NOIVA'
+                        );
+                    }
+                } else {
+                    // Versão genérica sem separação
+                    if (attending.length > 0) {
+                        yPos = addGuestSection(
+                            attending, 
+                            `CONVIDADOS CONFIRMADOS (+${totalCompanions} acompanhantes)`, 
+                            primaryColor, 
+                            'CONFIRMADOS'
+                        );
+                    }
+
+                    if (notAttending.length > 0) {
+                        yPos = addGuestSection(
+                            notAttending, 
+                            'CONVIDADOS QUE NAO COMPARECERAO', 
+                            lightGray, 
+                            'NAO COMPARECERAO'
+                        );
+                    }
                 }
 
                 // FOOTER PROFISSIONAL
@@ -2800,5 +3111,5 @@
             document.getElementById('previewImage').src = '';
         }
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'975e0b01857a77d7',t:'MTc1NjMyMzY1MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9760fbbf26d977e0',t:'MTc1NjM1NDQ4My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
